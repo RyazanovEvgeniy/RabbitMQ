@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  webapi:
+    image: ${DOCKER_REGISTRY-}webapi
+    build:
+      context: .
+      dockerfile: Webapi/Dockerfile
+    ports:
+        - '7047:443'
+    depends_on:
+      - "rabbitmq"
+
+  rabbitmq:
+    container_name: "rabbitmqcontainer"
+    image: rabbitmq:management
+    hostname: "rabbitmq"
+    ports:
+        - '5672:5672'
+        - '15672:15672'
+
+  masstransit.consumer:
+    image: ${DOCKER_REGISTRY-}consumer
+    build:
+      context: .
+      dockerfile: Consumer/Dockerfile
+    depends_on:
+      - "rabbitmq"
+
+  masstransit.consumer2:
+    image: ${DOCKER_REGISTRY-}consumer2
+    build:
+      context: .
+      dockerfile: Consumer2/Dockerfile
+    depends_on:
+      - "rabbitmq"
