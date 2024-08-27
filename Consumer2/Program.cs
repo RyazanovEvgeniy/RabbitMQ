@@ -12,11 +12,12 @@ builder.ConfigureServices((hostContext, services) =>
 
         c.UsingRabbitMq((context, cfg) =>
         {
-            cfg.Host("rabbitmq://localhost", c =>
-            {
-                c.Username("root");
-                c.Password("123");
-            });
+            cfg.Host("rabbitmq", "/", _ => { });
+            // cfg.Host("rabbitmq://localhost", c =>
+            // {
+            //     c.Username("root");
+            //     c.Password("123");
+            // });
 
             cfg.ReceiveEndpoint("NotifyTransactionsQueue2", e => e.ConfigureConsumer<NotificationTransactionConsumer>(context));
 

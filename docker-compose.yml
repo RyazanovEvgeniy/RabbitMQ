@@ -2,12 +2,13 @@ version: '3.9'
 
 services:
   webapi:
-    image: ${DOCKER_REGISTRY-}webapi
+    container_name: webapicontainer
     build:
       context: .
-      dockerfile: Webapi/Dockerfile
+      dockerfile: Dockerfile_Webapi
     ports:
-        - '7047:443'
+      - '44310:44310'
+      - '44311:44311'
     depends_on:
       - "rabbitmq"
 
@@ -19,18 +20,18 @@ services:
         - '5672:5672'
         - '15672:15672'
 
-  masstransit.consumer:
-    image: ${DOCKER_REGISTRY-}consumer
+  consumer:
+    container_name: consumercontainer
     build:
       context: .
-      dockerfile: Consumer/Dockerfile
+      dockerfile: Dockerfile_Consumer
     depends_on:
       - "rabbitmq"
 
-  masstransit.consumer2:
-    image: ${DOCKER_REGISTRY-}consumer2
+  consumer2:
+    container_name: consumer2container
     build:
       context: .
-      dockerfile: Consumer2/Dockerfile
+      dockerfile: Dockerfile_Consumer2
     depends_on:
       - "rabbitmq"

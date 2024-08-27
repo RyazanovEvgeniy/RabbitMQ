@@ -4,9 +4,12 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Consumer2.csproj", "./"]
-RUN dotnet restore "Consumer2.csproj"
-COPY ./ ./
+COPY ["Consumer2/Consumer2.csproj", "Consumer2/"]
+COPY ["Shared/Shared.csproj", "Shared/"]
+RUN dotnet restore "Consumer2/Consumer2.csproj"
+COPY ["Consumer2/", "Consumer2/"]
+COPY ["Shared/", "Shared/"]
+WORKDIR "/src/Consumer2"
 RUN dotnet build "Consumer2.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

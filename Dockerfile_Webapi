@@ -1,13 +1,17 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 7047
+EXPOSE 44310
+EXPOSE 44311
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Webapi.csproj", "./"]
-RUN dotnet restore "Webapi.csproj"
-COPY ./ ./
+COPY ["Webapi/Webapi.csproj", "Webapi/"]
+COPY ["Shared/Shared.csproj", "Shared/"]
+RUN dotnet restore "Webapi/Webapi.csproj"
+COPY ["Webapi/", "Webapi/"]
+COPY ["Shared/", "Shared/"]
+WORKDIR "/src/Webapi"
 RUN dotnet build "Webapi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
