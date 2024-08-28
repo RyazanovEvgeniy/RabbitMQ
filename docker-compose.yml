@@ -1,5 +1,8 @@
-version: '3.9'
+version: '3.4'
 
+networks:
+  rabbit-mq-test:
+    driver: bridge
 services:
   webapi:
     container_name: webapicontainer
@@ -7,10 +10,19 @@ services:
       context: .
       dockerfile: Dockerfile_Webapi
     ports:
-      - '44310:44310'
-      - '44311:44311'
+      - '7070:7070'
+      - '7071:7071'
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:7071;http://+:7070
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=pass123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    networks:
+      - rabbit-mq-test
     depends_on:
       - "rabbitmq"
+    volumes:
+      - ~/.aspnet/https:/https:ro
 
   rabbitmq:
     container_name: "rabbitmqcontainer"
@@ -19,12 +31,16 @@ services:
     ports:
         - '5672:5672'
         - '15672:15672'
+    networks:
+      - rabbit-mq-test
 
   consumer:
     container_name: consumercontainer
     build:
       context: .
       dockerfile: Dockerfile_Consumer
+    networks:
+      - rabbit-mq-test
     depends_on:
       - "rabbitmq"
 
@@ -33,5 +49,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile_Consumer2
+    networks:
+      - rabbit-mq-test
     depends_on:
       - "rabbitmq"
